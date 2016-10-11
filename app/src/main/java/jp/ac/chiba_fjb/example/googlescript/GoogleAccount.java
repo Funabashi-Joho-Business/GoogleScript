@@ -57,8 +57,10 @@ public class GoogleAccount {
     }
     public void requestAccount(){
         //ユーザ選択
-        if(mContext instanceof Activity)
+        if(mAccountName==null && mContext instanceof Activity)
             ((Activity)mContext).startActivityForResult(mCredential.newChooseAccountIntent(),REQUEST_ACCOUNT_PICKER);
+        else
+            call();
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == REQUEST_ACCOUNT_PICKER) {

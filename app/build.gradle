@@ -36,6 +36,7 @@ dependencies {
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
     }
+    compile 'com.google.android.gms:play-services-auth:9.4.0'
     compile 'com.google.http-client:google-http-client-gson:1.22.0'
     compile 'com.google.apis:google-api-services-drive:v3-rev45-1.22.0'
 }

@@ -22,7 +22,7 @@ function Main(name) {
 public class MainActivity extends AppCompatActivity {
 
     private GoogleScript mGoogleScript;
-
+    private GoogleDrive mDrive;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +30,15 @@ public class MainActivity extends AppCompatActivity {
         //キー登録用SHA1の出力(いらなければ消す)
         Log.d("フィンガーコード",AppFinger.getSha1(this));
 
-        GoogleDrive drive = new GoogleDrive(this);
-        drive.connect();
+        mDrive = new GoogleDrive(this);
+        mDrive.setOnConnectedListener(new GoogleDrive.OnConnectListener() {
+            @Override
+            public void onConnected(boolean flag) {
+                if(flag)
+                    mDrive.createFolder(mDrive.getRootId(),"ふぉっふぉっふぉ");
+            }
+        });
+        mDrive.connect();
 /*
         //Scriptで必要な権限を記述する
         final String[] SCOPES = {
@@ -70,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //必要に応じてアカウントや権限ダイアログの表示
-        mGoogleScript.onActivityResult(requestCode,resultCode,data);
+        mDrive.onActivityResult(requestCode,resultCode,data);
 
 
     }
