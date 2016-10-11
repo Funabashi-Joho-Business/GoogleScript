@@ -30,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
         //キー登録用SHA1の出力(いらなければ消す)
         Log.d("フィンガーコード",AppFinger.getSha1(this));
 
+        GoogleDrive drive = new GoogleDrive(this);
+        drive.connect();
+/*
         //Scriptで必要な権限を記述する
         final String[] SCOPES = {
                 "https://www.googleapis.com/auth/drive",
@@ -60,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+                */
     }
 
     @Override
