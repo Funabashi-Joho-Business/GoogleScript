@@ -2,6 +2,7 @@ package jp.ac.chiba_fjb.example.googlescript;
 
 
 import android.app.Activity;
+
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -20,11 +21,12 @@ import java.util.Set;
 
 public class GoogleScript extends GoogleAccount
 {
-	static interface ScriptListener{
+	public static interface ScriptListener{
 		public void onExecuted(GoogleScript script, Operation op);
 	}
 	static class ScriptInfo{
 		public String scriptId;
+		public String apiKey;
 		public String functionName;
 		public List<Object> params;
 		public ScriptListener listener;
@@ -41,7 +43,7 @@ public class GoogleScript extends GoogleAccount
 		return new HttpRequestInitializer() {
 			@Override
 			public void initialize(HttpRequest httpRequest)
-					throws java.io.IOException {
+					throws IOException {
 				requestInitializer.initialize(httpRequest);
 				httpRequest.setReadTimeout(380000);
 			}
@@ -54,10 +56,11 @@ public class GoogleScript extends GoogleAccount
 		mContext = activity;
 	}
 
-	public void execute(String scriptId, String name, List<Object> params, ScriptListener listener){
+	public void execute(String scriptId, String apiKey, String name,List<Object> params, ScriptListener listener){
 		//実行に必要な情報を保存
 		ScriptInfo info = new ScriptInfo();
 		info.scriptId = scriptId;
+		info.apiKey = apiKey;
 		info.functionName = name;
 		info.params = params;
 		info.listener = listener;
@@ -67,7 +70,7 @@ public class GoogleScript extends GoogleAccount
 		call();
 	}
 
-	protected void onExec(){
+	protected void onExec() throws IOException {
 		HttpTransport transport = AndroidHttp.newCompatibleTransport();
 		JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 		mService = new Script.Builder(
@@ -79,28 +82,32 @@ public class GoogleScript extends GoogleAccount
 			ExecutionRequest request = new ExecutionRequest().setFunction(info.functionName);
 			if (info.params != null)
 				request.setParameters(info.params);
-
-			try {
-				final Operation op = mService.scripts().run(info.scriptId, request).execute();
-				if (info.listener != null) {
-					mContext.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							info.listener.onExecuted(GoogleScript.this, op);
-						}
-					});
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+			//request.setDevMode(true);//デベロッパーモード
+			final Operation op = mService.scripts().run(info.scriptId, request).setKey(info.apiKey).execute();
+			if (info.listener != null) {
+				mContext.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						info.listener.onExecuted(GoogleScript.this, op);
+					}
+				});
 			}
+
 		}
 		mScripts.clear();
 	}
 	protected void onError() {
 		//エラーを通知し、実行キューを解除
-		for(ScriptInfo info : mScripts) {
+		for(ScriptInfo i : mScripts) {
+			final ScriptInfo info = i;
 			if(info.listener != null)
-				info.listener.onExecuted(GoogleScript.this,null);
+				mContext.runOnUiThread(new Runnable() {
+					                       @Override
+					                       public void run() {
+						                       info.listener.onExecuted(GoogleScript.this, null);
+
+					                       }
+				                       });
 			mScripts.remove(info);
 		}
 	}

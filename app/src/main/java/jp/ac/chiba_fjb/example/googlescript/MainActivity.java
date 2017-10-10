@@ -1,8 +1,8 @@
 package jp.ac.chiba_fjb.example.googlescript;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -12,6 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
+//GASのソース作成後、公開から実行可能API(全員)を選ぶ
+//リソース Cloud Platformプロジェクトから以下を設定
+// APIとサービス
+//    Google Apps Script Execution APIを有効
+//    認証でAPIキーを作成
+
 //スクリプト側(指定したフォルダを作成する)
 function Main(name) {
    DriveApp.getRootFolder().createFolder(name);
@@ -30,16 +36,16 @@ public class MainActivity extends AppCompatActivity {
         //キー登録用SHA1の出力(いらなければ消す)
         Log.d("フィンガーコード",AppFinger.getSha1(this));
 
-        mDrive = new GoogleDrive(this);
-        mDrive.setOnConnectedListener(new GoogleDrive.OnConnectListener() {
-            @Override
-            public void onConnected(boolean flag) {
-                if(flag)
-                    mDrive.createFolder(mDrive.getRootId(),"ふぉっふぉっふぉ");
-            }
-        });
-        mDrive.connect();
-/*
+//        mDrive = new GoogleDrive(this);
+//        mDrive.setOnConnectedListener(new GoogleDrive.OnConnectListener() {
+//            @Override
+//            public void onConnected(boolean flag) {
+//                if(flag)
+//                    mDrive.createFolder(mDrive.getRootId(),"ふぉっふぉっふぉ");
+//            }
+//        });
+//        mDrive.connect();
+
         //Scriptで必要な権限を記述する
         final String[] SCOPES = {
                 "https://www.googleapis.com/auth/drive",
@@ -48,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
 
         mGoogleScript = new GoogleScript(this,SCOPES);
         //強制的にアカウントを切り替える場合
-        // mGoogleScript.resetAccount();
+        //mGoogleScript.resetAccount();
 
         //送信パラメータ
         List<Object> params = new ArrayList<>();
         params.add("あいうえお");
 
         //ID,ファンクション名,結果コールバック
-        mGoogleScript.execute("1Nb8a-gdA4XvvjfTsLdnRdiU50N7Ur8lRBnkkgWCvFKlLFQFjsRN8VhD2", "Main",
+        mGoogleScript.execute("McRDijj_Z5jVmvXZvwNDH8_36b1jVoKuO", "AIzaSyAvNu0EUAgtwtWRlyKSGK77c3ybKVofYck","Main",
                 params, new GoogleScript.ScriptListener() {
                     @Override
                     public void onExecuted(GoogleScript script, Operation op) {
@@ -70,15 +76,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-                */
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //必要に応じてアカウントや権限ダイアログの表示
-        mDrive.onActivityResult(requestCode,resultCode,data);
-
+        //mDrive.onActivityResult(requestCode,resultCode,data);
+        mGoogleScript.onActivityResult(requestCode,resultCode,data);
 
     }
 }

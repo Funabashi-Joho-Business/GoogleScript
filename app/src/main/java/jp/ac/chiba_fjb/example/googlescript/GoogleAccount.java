@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.ExponentialBackOff;
@@ -115,10 +116,12 @@ public class GoogleAccount {
                         onError();
                         e.printStackTrace();
 
-                    } else {
+                    }else if (e instanceof GoogleAuthIOException) {
                         //登録系エラー
                         onError();
                         e.printStackTrace();
+                    }else {
+
                     }
                 }
             }
