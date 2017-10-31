@@ -17,6 +17,7 @@ import java.util.List;
 // APIとサービス
 //    Google Apps Script Execution APIを有効
 //    認証でAPIキーを作成
+//    認証でウイザードAndroid、フィンガーコードを登録
 
 //スクリプト側(指定したフォルダを作成する)
 function Main(name) {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         params.add("あいうえお");
 
         //ID,ファンクション名,結果コールバック
-        mGoogleScript.execute("McRDijj_Z5jVmvXZvwNDH8_36b1jVoKuO", "AIzaSyAvNu0EUAgtwtWRlyKSGK77c3ybKVofYck","Main",
+        mGoogleScript.execute("McRDijj_Z5jVmvXZvwNDH8_36b1jVoKuO", "AIzaSyBTrJ83xMMO50IbH1aiDebaSRtFdfKQKmY","Main",
                 params, new GoogleScript.ScriptListener() {
                     @Override
                     public void onExecuted(GoogleScript script, Operation op) {

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.ExponentialBackOff;
@@ -39,8 +40,11 @@ public class GoogleAccount {
                 .setBackOff(new ExponentialBackOff());
         //登録済みアカウント名を取得
         mAccountName = mContext.getSharedPreferences("GOOGLE", Context.MODE_PRIVATE).getString(PREF_ACCOUNT_NAME, null);
-        Account account = new Account(mAccountName,"com.google");
-        mCredential.setSelectedAccount(account);
+        if(mAccountName != null){
+            Account account = new Account(mAccountName,"com.google");
+            mCredential.setSelectedAccount(account);
+        }
+
     }
     public GoogleAccountCredential getCredential(){
         return mCredential;
@@ -113,8 +117,11 @@ public class GoogleAccount {
             onError();
             System.err.println(((GoogleJsonResponseException)e).getMessage());
 
-        } else {
+        } else if(e instanceof GoogleAuthIOException ) {
             //登録系エラー
+            onError();
+            e.printStackTrace();
+        }else{
             onError();
             e.printStackTrace();
         }

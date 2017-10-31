@@ -38,6 +38,7 @@ public class GoogleScript extends GoogleAccount
 	private Set<ScriptInfo> mScripts = new HashSet<>();
 	private Activity mContext;
 	private Script mService;
+	private boolean mDebug = false;
 
 	private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
 		return new HttpRequestInitializer() {
@@ -55,7 +56,9 @@ public class GoogleScript extends GoogleAccount
 		//Activityの保存
 		mContext = activity;
 	}
-
+	public void setDebug(boolean flag){
+		mDebug = flag;
+	}
 	public void execute(String scriptId, String apiKey, String name,List<Object> params, ScriptListener listener){
 		//実行に必要な情報を保存
 		ScriptInfo info = new ScriptInfo();
@@ -82,7 +85,7 @@ public class GoogleScript extends GoogleAccount
 			ExecutionRequest request = new ExecutionRequest().setFunction(info.functionName);
 			if (info.params != null)
 				request.setParameters(info.params);
-			//request.setDevMode(true);//デベロッパーモード
+			request.setDevMode(mDebug);//デベロッパーモード
 			final Operation op = mService.scripts().run(info.scriptId, request).setKey(info.apiKey).execute();
 			if (info.listener != null) {
 				mContext.runOnUiThread(new Runnable() {
