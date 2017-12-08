@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.google.api.services.script.model.Operation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,15 +58,20 @@ public class MainActivity extends AppCompatActivity {
         //強制的にアカウントを切り替える場合
         //mGoogleScript.resetAccount();
 
-        //送信パラメータ
-        List<Object> params = new ArrayList<>();
-        params.add("あいうえお");
+        mGoogleScript.execute(new GoogleAccount.GoogleRunnable() {
+            @Override
+            public void run() throws IOException {
+                //送信パラメータ
+                List<Object> params = new ArrayList<>();
+                params.add("あいうえお");
 
-        //ID,ファンクション名,結果コールバック
-        mGoogleScript.execute("McRDijj_Z5jVmvXZvwNDH8_36b1jVoKuO", "AIzaSyBTrJ83xMMO50IbH1aiDebaSRtFdfKQKmY","Main",
-                params, new GoogleScript.ScriptListener() {
+                //ID,ファンクション名,結果コールバック
+                final Operation op = mGoogleScript.callScript(
+                    "McRDijj_Z5jVmvXZvwNDH8_36b1jVoKuO",
+                    null,"Main",params);
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onExecuted(GoogleScript script, Operation op) {
+                    public void run() {
                         TextView textView = (TextView) findViewById(R.id.textMessage);
 
                         if(op == null || op.getError() != null)
@@ -77,6 +83,17 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+
 
     }
 

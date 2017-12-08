@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.2'
     defaultConfig {
         applicationId "jp.ac.chiba_fjb.example.googlescript"
         minSdkVersion 15
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -24,19 +24,20 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:27.0.2'
     //Script実行に追加
     compile('com.google.api-client:google-api-client-android:1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    compile('com.google.apis:google-api-services-script:v1-rev90-1.23.0') {
+    compile('com.google.apis:google-api-services-script:v1-rev109-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
     }
-    compile 'com.google.android.gms:play-services-auth:11.0.4'
+    compile 'com.google.android.gms:play-services-auth:11.6.2'
     compile 'com.google.http-client:google-http-client-gson:1.23.0'
-    compile 'com.google.apis:google-api-services-drive:v3-rev85-1.23.0'
+    compile 'com.google.apis:google-api-services-drive:v3-rev92-1.23.0'
+
 }

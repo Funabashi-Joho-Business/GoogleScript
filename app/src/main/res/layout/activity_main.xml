@@ -12,7 +12,8 @@
     tools:context="jp.ac.chiba_fjb.example.googlescript.MainActivity">
 
     <TextView
+        android:id="@+id/textMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textMessage" />
+        android:text="出力領域"/>
 </RelativeLayout>

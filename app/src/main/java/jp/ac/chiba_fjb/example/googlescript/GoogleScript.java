@@ -14,28 +14,12 @@ import com.google.api.services.script.model.ExecutionRequest;
 import com.google.api.services.script.model.Operation;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class GoogleScript extends GoogleAccount
 {
-	public static interface ScriptListener{
-		public void onExecuted(GoogleScript script, Operation op);
-	}
-	static class ScriptInfo{
-		public String scriptId;
-		public String apiKey;
-		public String functionName;
-		public List<Object> params;
-		public ScriptListener listener;
-	}
-
-
-
 	private static final String[] SCOPES = {"https://www.googleapis.com/auth/drive"};
-	private Set<ScriptInfo> mScripts = new HashSet<>();
 	private Activity mContext;
 	private Script mService;
 	private boolean mDebug = false;
@@ -55,63 +39,27 @@ public class GoogleScript extends GoogleAccount
 		super(activity,scope);
 		//Activityの保存
 		mContext = activity;
+
+		HttpTransport transport = AndroidHttp.newCompatibleTransport();
+		JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+		mService = new Script.Builder(
+			                             transport, jsonFactory, setHttpTimeout(getCredential()))
+			           .setApplicationName("Google Apps Script Execution API")
+			           .build();
 	}
 	public void setDebug(boolean flag){
 		mDebug = flag;
 	}
-	public void execute(String scriptId, String apiKey, String name,List<Object> params, ScriptListener listener){
-		//実行に必要な情報を保存
-		ScriptInfo info = new ScriptInfo();
-		info.scriptId = scriptId;
-		info.apiKey = apiKey;
-		info.functionName = name;
-		info.params = params;
-		info.listener = listener;
-		mScripts.add(info);
+	public Operation callScript(String scriptId, String apiKey, String name, List<Object> params) throws IOException {
+		ExecutionRequest request = new ExecutionRequest().setFunction(name);
+		if (params != null)
+			request.setParameters(params);
+		request.setDevMode(mDebug);//デベロッパーモード
+		Operation op = mService.scripts().run(scriptId, request).setKey(apiKey).execute();
+		return op;
 
-		//サーバに要求開始
-		call();
 	}
 
-	protected void onExec() throws IOException {
-		HttpTransport transport = AndroidHttp.newCompatibleTransport();
-		JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-		mService = new Script.Builder(
-				transport, jsonFactory, setHttpTimeout(getCredential()))
-				.setApplicationName("Google Apps Script Execution API")
-				.build();
 
-		for(final ScriptInfo info : mScripts) {
-			ExecutionRequest request = new ExecutionRequest().setFunction(info.functionName);
-			if (info.params != null)
-				request.setParameters(info.params);
-			request.setDevMode(mDebug);//デベロッパーモード
-			final Operation op = mService.scripts().run(info.scriptId, request).setKey(info.apiKey).execute();
-			if (info.listener != null) {
-				mContext.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						info.listener.onExecuted(GoogleScript.this, op);
-					}
-				});
-			}
 
-		}
-		mScripts.clear();
-	}
-	protected void onError() {
-		//エラーを通知し、実行キューを解除
-		for(ScriptInfo i : mScripts) {
-			final ScriptInfo info = i;
-			if(info.listener != null)
-				mContext.runOnUiThread(new Runnable() {
-					                       @Override
-					                       public void run() {
-						                       info.listener.onExecuted(GoogleScript.this, null);
-
-					                       }
-				                       });
-			mScripts.remove(info);
-		}
-	}
 }
