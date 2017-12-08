@@ -3,7 +3,6 @@ package jp.ac.chiba_fjb.example.googlescript;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.google.api.services.script.model.Operation;
@@ -35,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //キー登録用SHA1の出力(いらなければ消す)
-        Log.d("フィンガーコード",AppFinger.getSha1(this));
 
 //        mDrive = new GoogleDrive(this);
 //        mDrive.setOnConnectedListener(new GoogleDrive.OnConnectListener() {
